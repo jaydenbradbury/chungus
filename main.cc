@@ -78,15 +78,15 @@ int main(){
 			double BCP = triArea(b, c, pt);
 			double CAP = triArea(c, a, pt);
 			
-			double weigthA = BCP / ABC;
-			double weigthB = CAP / ABC;
-			double weigthC = ABP / ABC;
+			double weightA = BCP / ABC;
+			double weightB = CAP / ABC;
+			double weightC = ABP / ABC;
 
 		
 			if(inTri(a, b, c, pt)){
-				double r = a.col.r* weightA + b.col.r * weigthB + c.col.r * weigthC;
-				double g = a.col.g* weightA + b.col.g * weigthB + c.col.g * weigthC;
-				double b = a.col.b* weightA + b.col.b * weigthB + c.col.b * weigthC;
+				double r = a.col.r* weightA + b.col.r * weightB + c.col.r * weightC;
+				double g = a.col.g* weightA + b.col.g * weightB + c.col.g * weightC;
+				double b = a.col.b* weightA + b.col.b * weightB + c.col.b * weightC;
 				
 				double colorPt = new Color{r, g, b};
 
