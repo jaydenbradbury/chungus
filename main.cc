@@ -84,13 +84,11 @@ int main(){
 
 		
 			if(inTri(a, b, c, pt)){
-				double r = a.col.r* weightA + b.col.r * weightB + c.col.r * weightC;
-				double g = a.col.g* weightA + b.col.g * weightB + c.col.g * weightC;
-				double b = a.col.b* weightA + b.col.b * weightB + c.col.b * weightC;
-				
-				double colorPt = new Color{r, g, b};
+				double R = a.col.r* weightA + b.col.r * weightB + c.col.r * weightC;
+				double B = a.col.g* weightA + b.col.g * weightB + c.col.g * weightC;
+				double G = a.col.b* weightA + b.col.b * weightB + c.col.b * weightC;
 
-				setPixel(pt.x, y, 255, 255, 255);
+				setPixel(x, y, R*255, B*255, G*255);
 			} else{
 				setPixel(x, y, 0, 0, 0);
 			}
