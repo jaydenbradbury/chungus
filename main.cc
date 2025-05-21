@@ -1,4 +1,5 @@
 #include <iostream>
+#include <array>
 
 #define SCREEN_WIDTH	800
 #define SCREEN_HEIGHT	800
@@ -14,99 +15,63 @@ struct Color{
 	double r, g, b;
 };
 
-template<int R, int C>
+template<size_t R, size_t C, typename T = double>
 class Matrix{
-	double* data;
+	std::array<T, R * C> data;
 
 public:
-	Matrix<R, C>() : data(new double[R * C]){
-		for(int a = 0; a < R * C; ++a){
-			data[a] = 0;
-		}
+	Matrix<R, C, T>() : data({}) {}
+
+	Matrix<R, C, T>(std::initializer_list<T> list) : data({}){
+		std::copy(list.begin(), list.end(), data.begin());
 	}
 
-	Matrix<R, C>(std::initializer_list<double> list) : data(new double[R * C]){
-		int a = 0;
-		for(; a < R * C && a < list.size(); ++a){
-			data[a] = list.begin()[a];
-		}
-		for(; a < R * C; ++a){
-			data[a] = 0;
-		}
-	}
-
-	Matrix<R, C>(const Matrix<R, C>& other) : data(new double[R * C]){
-		for(int a = 0; a < R * C; ++a){
-			data[a] = other.data[a];
-		}
-	}
-
-	Matrix<R, C>& operator=(const Matrix<R, C>& other){
-		for(int a = 0; a < R * C; ++a){
-			data[a] = other.data[a];
-		}
-		return *this;
-	}
-
-	Matrix<R, C>(Matrix<R, C>&& other) : data(new double[R * C]){
-		other.data = nullptr;
-	}
-
-	Matrix<R, C>& operator=(Matrix<R, C>&& other){
-		if(this != &other){
-			delete[] data;
-			data = other.data;
-			other.data = nullptr;
-		}
-		return *this;
-	}
-
-	~Matrix<R, C>(){
-		delete[] data;
-	}
-
-	constexpr int getR() const{
+	constexpr size_t getR() const noexcept{
 		return R;
 	}
 
-	constexpr int getC() const{
+	constexpr size_t getC() const noexcept{
 		return C;
 	}
 
-	void set(int r, int c, double d){
+	T& get(size_t r, size_t c){
 		if(r >= R || c >= C){
-			return;
+			std::cerr << "MATRIX DIM MISMATCH\n";
+			exit(EXIT_FAILURE);
 		}
-		data[r + c * R] = d;
+		return data[r + c * R];
 	}
-
-	double get(int r, int c) const{
+	
+	const T& get(size_t r, size_t c) const{
 		if(r >= R || c >= C){
-			return 0;
+			std::cerr << "MATRIX DIM MISMATCH\n";
+			exit(EXIT_FAILURE);
 		}
 		return data[r + c * R];
 	}
 
-	Matrix<R, C> operator+(const Matrix<R, C>& rhs) const{
-		Matrix<R, C> ret;
-		for(int a = 0; a < R * C; ++a){
+	template<typename T2>
+	Matrix<R, C, T> operator+(const Matrix<R, C, T2>& rhs) const{
+		Matrix<R, C, T> ret;
+		for(size_t a = 0; a < R * C; ++a){
 			ret.data[a] = data[a] + rhs.data[a];
 		}
 		return ret;
 	}
-	
-	Matrix<R, C> operator-(const Matrix<R, C>& rhs) const{
-		Matrix<R, C> ret;
-		for(int a = 0; a < R * C; ++a){
+
+	template<typename T2>
+	Matrix<R, C, T> operator-(const Matrix<R, C, T2>& rhs) const{
+		Matrix<R, C, T> ret;
+		for(size_t a = 0; a < R * C; ++a){
 			ret.data[a] = data[a] - rhs.data[a];
 		}
 		return ret;
 	}
 
-	template<int R2, int C2>
-	Matrix<R, C2> operator*(const Matrix<R2, C2>& rhs) const{
+	template<size_t R2, size_t C2, typename T2>
+	Matrix<R, C2, T> operator*(const Matrix<R2, C2, T2>& rhs) const{
 		static_assert(C == R2);
-		Matrix<R, C2> ret;
+		Matrix<R, C2, T> ret;
 		for(int c = 0; c < C2; ++c){
 			for(int r = 0; r < R; ++r){
 				double dot = 0;
@@ -119,25 +84,25 @@ public:
 		return ret;
 	}
 
-	Matrix<R, C> operator*(const double& v){
-		Matrix<R, C> ret;
+	Matrix<R, C, T> operator*(const T& v){
+		Matrix<R, C, T> ret;
 		for(int a = 0; a < R * C; ++a){
 			ret[a] = data[a] * v;
 		}
 		return ret;
 	}
-
-	double operator[](const int& idx) const{
+	
+	T& operator[](const size_t& idx){
 		return data[idx];
 	}
 
-	double& operator[](const int& idx){
+	const T& operator[](const size_t& idx) const{
 		return data[idx];
 	}
 
-	static Matrix<R, C> identity(){
+	static Matrix<R, C, T> identity(){
 		static_assert(R == C);
-		Matrix<R, C> ret;
+		Matrix<R, C, T> ret;
 		for(int a = 0; a < R; ++a){
 			ret.set(a, a, 1);
 		}
