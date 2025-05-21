@@ -15,6 +15,9 @@ struct Color{
 	double r, g, b;
 };
 
+// Z into screen
+// CW
+
 template<size_t R, size_t C, typename T = double>
 class Matrix{
 	std::array<T, R * C> data;
@@ -122,6 +125,13 @@ public:
 using Vec3 = Matrix<3, 1>;
 using Vec4 = Matrix<4, 1>;
 
+Vec4 topx(Vec4 v){
+	Vec4 ret;
+	ret[0] = (v[0] + 1) / 2 * SCREEN_WIDTH;
+	ret[1] = (v[1] + 1) / 2 * SCREEN_HEIGHT;
+	return ret;
+}
+
 struct Vertex{
 	Vec4 pos;
 	Color col;
@@ -146,6 +156,11 @@ bool inTri(Vertex a, Vertex b, Vertex c, Vertex pt){
 int main(){
 	init();
 
+
+	while(true){
+		quitTest();
+		double dt = jayden::dt();
+		std::cout << (int)(1. / dt) << " fps\n";
 	double ABC = triArea(a, b, c);
 
 	for(int x = 0; x < SCREEN_WIDTH; ++x){
@@ -172,11 +187,6 @@ int main(){
 			}
 		}
 	}
-
-	while(true){
-		quitTest();
-		double dt = jayden::dt();
-		std::cout << (int)(1. / dt) << " fps\n";
 		
 		update();
 	}
